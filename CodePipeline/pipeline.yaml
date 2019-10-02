@@ -242,6 +242,8 @@ Resources:
                 ActionMode: REPLACE_ON_FAILURE
                 RoleArn: !GetAtt CFNRole.Arn
                 StackName: !Sub qa-${AWS::StackName}
+                TemplatePath: !Sub 'bld::CloudFormation/sagemaker.yaml'
+                TemplateConfiguration: 'bld::CloudFormation/configuration_qa.json'
               RunOrder: 1
             - Name: TestEndpoint
               ActionTypeId:
@@ -278,6 +280,8 @@ Resources:
                 ActionMode: REPLACE_ON_FAILURE
                 RoleArn: !GetAtt CFNRole.Arn
                 StackName: !Sub prod-${AWS::StackName}
+                TemplatePath: !Sub 'bld::CloudFormation/sagemaker.yaml'
+                TemplateConfiguration: 'bld::CloudFormation/configuration_prod.json'
               RunOrder: 2
             - Name: TestEndpoint
               ActionTypeId:
@@ -297,10 +301,10 @@ Resources:
       RoleName: !Sub ${AWS::StackName}-cfn-role
       AssumeRolePolicyDocument:
         Statement:
-        - Action: ['sts:AssumeRole']
-          Effect: Allow
-          Principal:
-            Service: [cloudformation.amazonaws.com]
+          - Action: ['sts:AssumeRole']
+            Effect: Allow
+            Principal:
+              Service: [cloudformation.amazonaws.com]
         Version: '2012-10-17'
       Path: /
       Policies:
@@ -321,10 +325,10 @@ Resources:
       RoleName: !Sub ${AWS::StackName}-codebuild-role
       AssumeRolePolicyDocument:
         Statement:
-        - Action: ['sts:AssumeRole']
-          Effect: Allow
-          Principal:
-            Service: [codebuild.amazonaws.com]
+          - Action: ['sts:AssumeRole']
+            Effect: Allow
+            Principal:
+              Service: [codebuild.amazonaws.com]
         Version: '2012-10-17'
       Path: /
       Policies:
@@ -333,29 +337,29 @@ Resources:
             Version: '2012-10-17'
             Statement:
               - Action:
-                - codepipeline:*
-                - sagemaker:*
-                - s3:*
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
+                  - codepipeline:*
+                  - sagemaker:*
+                  - s3:*
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
                 Effect: Allow
                 Resource: '*'
               - Action:
-                - iam:PassRole
+                  - iam:PassRole
                 Effect: Allow
                 Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}-sagemaker-role
-             
+
   PipelineRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub ${AWS::StackName}-pipeline-role
       AssumeRolePolicyDocument:
         Statement:
-        - Action: ['sts:AssumeRole']
-          Effect: Allow
-          Principal:
-            Service: [codepipeline.amazonaws.com]
+          - Action: ['sts:AssumeRole']
+            Effect: Allow
+            Principal:
+              Service: [codepipeline.amazonaws.com]
         Version: '2012-10-17'
       Path: /
       Policies:
@@ -364,19 +368,19 @@ Resources:
             Version: '2012-10-17'
             Statement:
               - Action:
-                - s3:*
-                - codebuild:*
-                - cloudformation:CreateStack
-                - cloudformation:DescribeStacks
-                - cloudformation:DeleteStack
-                - cloudformation:UpdateStack
-                - cloudformation:CreateChangeSet
-                - cloudformation:ExecuteChangeSet
-                - cloudformation:DeleteChangeSet
-                - cloudformation:DescribeChangeSet
-                - cloudformation:SetStackPolicy
-                - iam:PassRole
-                - sns:Publish
+                  - s3:*
+                  - codebuild:*
+                  - cloudformation:CreateStack
+                  - cloudformation:DescribeStacks
+                  - cloudformation:DeleteStack
+                  - cloudformation:UpdateStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:SetStackPolicy
+                  - iam:PassRole
+                  - sns:Publish
                 Effect: Allow
                 Resource: '*'
 
@@ -386,24 +390,24 @@ Resources:
       RoleName: !Sub ${AWS::StackName}-sagemaker-role
       AssumeRolePolicyDocument:
         Statement:
-        - Action: ['sts:AssumeRole']
-          Effect: Allow
-          Principal:
-            Service: [sagemaker.amazonaws.com]
+          - Action: ['sts:AssumeRole']
+            Effect: Allow
+            Principal:
+              Service: [sagemaker.amazonaws.com]
         Version: '2012-10-17'
       Path: /
       ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess 
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
       Policies:
         - PolicyName: S3Access
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Action:
-                - s3:GetObject
-                - s3:PutObject
-                - s3:DeleteObject
-                - s3:ListBucket
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
                 Effect: Allow
                 Resource: arn:aws:s3:::*
 
