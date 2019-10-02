@@ -407,7 +407,7 @@ Resources:
                 Effect: Allow
                 Resource: arn:aws:s3:::*
 
-Outputs:      
+Outputs:
   PipelineUrl:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
     Description: CodePipeline URL
