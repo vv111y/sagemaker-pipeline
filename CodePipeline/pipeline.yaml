@@ -1,7 +1,9 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
+
 Description: >
   CloudFormation SageMaker pipeline.
+
 Parameters:
   Email:
     Description: The email address where CodePipeline sends pipeline notifications
@@ -22,6 +24,7 @@ Parameters:
     Default: master
     Description: Branch to use from Repo. Only the Name. not the URL
     Type: String
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
