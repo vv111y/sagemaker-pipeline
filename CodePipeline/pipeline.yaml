@@ -201,7 +201,7 @@ Resources:
                 OAuthToken: !Ref 'GitHubToken'
               OutputArtifacts:
                 - Name: src
-              RunOrder: '1'
+              RunOrder: 1
         - Name: Build_and_Train
           Actions:
             - Name: cfn-nag
@@ -214,7 +214,7 @@ Resources:
                 ProjectName: !Ref 'CFNNagProject'
               InputArtifacts:
                 - Name: src
-              RunOrder: '1'
+              RunOrder: 1
             - Name: ModelTraining
               ActionTypeId:
                 Category: Build
@@ -227,7 +227,7 @@ Resources:
                 - Name: src
               OutputArtifacts:
                 - Name: bld
-              RunOrder: '2'
+              RunOrder: 2
         - Name: QA
           Actions:
             - Name: LaunchEndpoint
@@ -242,9 +242,7 @@ Resources:
                 ActionMode: REPLACE_ON_FAILURE
                 RoleArn: !GetAtt CFNRole.Arn
                 StackName: !Sub qa-${AWS::StackName}
-                TemplatePath: !Sub "bld::CloudFormation/sagemaker.yaml"
-                TemplateConfiguration: "bld::CloudFormation/configuration_qa.json"
-              RunOrder: '1'
+              RunOrder: 1
             - Name: TestEndpoint
               ActionTypeId:
                 Category: Test
@@ -255,7 +253,7 @@ Resources:
                 ProjectName: !Ref 'TestEndpointProjectQA'
               InputArtifacts:
                 - Name: bld
-              RunOrder: '2'
+              RunOrder: 2
         - Name: Production
           Actions:
             - Name: ApprovalGate
@@ -267,7 +265,7 @@ Resources:
               Configuration:
                 NotificationArn: !Ref CodePipelineSNSTopic
                 CustomData: !Sub 'Do you want to push your changes to production?'
-              RunOrder: '1'
+              RunOrder: 1
             - Name: LaunchEndpoint
               ActionTypeId:
                 Category: Deploy
@@ -280,9 +278,7 @@ Resources:
                 ActionMode: REPLACE_ON_FAILURE
                 RoleArn: !GetAtt CFNRole.Arn
                 StackName: !Sub prod-${AWS::StackName}
-                TemplatePath: !Sub "bld::CloudFormation/sagemaker.yaml"
-                TemplateConfiguration: "bld::CloudFormation/configuration_prod.json"
-              RunOrder: '2'
+              RunOrder: 2
             - Name: TestEndpoint
               ActionTypeId:
                 Category: Test
@@ -293,7 +289,7 @@ Resources:
                 ProjectName: !Ref 'TestEndpointProjectProd'
               InputArtifacts:
                 - Name: bld
-              RunOrder: '3'
+              RunOrder: 3
 
   CFNRole:
     Type: AWS::IAM::Role
