@@ -184,7 +184,7 @@ Resources:
         Type: S3
       DisableInboundStageTransitions: []
       Name: !Ref 'AWS::StackName'
-      RoleArn: !GetAtt [PipelineRole, Arn]
+      RoleArn: !GetAtt PipelineRole.Arn
       Stages:
         - Name: Source
           Actions:
@@ -240,7 +240,7 @@ Resources:
                 - Name: bld
               Configuration:
                 ActionMode: REPLACE_ON_FAILURE
-                RoleArn: !GetAtt [CFNRole, Arn]
+                RoleArn: !GetAtt CFNRole.Arn
                 StackName: !Sub qa-${AWS::StackName}
                 TemplatePath: !Sub "bld::CloudFormation/sagemaker.yaml"
                 TemplateConfiguration: "bld::CloudFormation/configuration_qa.json"
@@ -278,7 +278,7 @@ Resources:
                 - Name: bld
               Configuration:
                 ActionMode: REPLACE_ON_FAILURE
-                RoleArn: !GetAtt [CFNRole, Arn]
+                RoleArn: !GetAtt CFNRole.Arn
                 StackName: !Sub prod-${AWS::StackName}
                 TemplatePath: !Sub "bld::CloudFormation/sagemaker.yaml"
                 TemplateConfiguration: "bld::CloudFormation/configuration_prod.json"
