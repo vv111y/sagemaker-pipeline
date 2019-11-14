@@ -2,9 +2,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: >
   Creates an S3 bucket that hosts GitHub from stelligent/sagemaker-pipeline to use for Launch Stack.
 Parameters:
-  Email:
-    Description: The email address where CodePipeline sends pipeline notifications
-    Type: String
+Email:
+  Description: The email address where CodePipeline sends pipeline notifications
+  Type: String
   GitHubToken:
     NoEcho: true
     Description: Secret. It might look something like 9b189a1654643522561f7b3ebd44a1531a4287af OAuthToken with access to Repo. Go to https://github.com/settings/tokens

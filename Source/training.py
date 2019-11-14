@@ -1,3 +1,6 @@
+# * TOP:
+# ** init/imports:
+# *** imports:
 import boto3
 import re
 import os
@@ -7,30 +10,32 @@ from time import gmtime, strftime
 import sys
 import json
 
-start = time.time()
-
+# *** get args:
 role = sys.argv[1]
 bucket = sys.argv[2]
 stack_name = sys.argv[3]
 commit_id = sys.argv[4]
 commit_id = commit_id[0:7]
 
+start = time.time()
 training_image = '811284229777.dkr.ecr.us-east-1.amazonaws.com/image-classification:latest'
 timestamp = time.strftime('%Y-%m-%d-%H-%M-%S', time.gmtime())
 
+# * get data:
+# ** fns:
 def download(url):
     filename = url.split("/")[-1]
     if not os.path.exists(filename):
         wget.download(url, filename)
 
-        
+
 def upload_to_s3(channel, file):
     s3 = boto3.resource('s3')
     data = open(file, "rb")
     key = channel + '/' + file
     s3.Bucket(bucket).put_object(Key=key, Body=data)
 
-# caltech-256
+# ** get data caltech-256:
 print ("Downloadng Training Data")
 download('http://data.mxnet.io/data/caltech-256/caltech-256-60-train.rec')
 upload_to_s3('train', 'caltech-256-60-train.rec')
@@ -40,10 +45,11 @@ download('http://data.mxnet.io/data/caltech-256/caltech-256-60-val.rec')
 upload_to_s3('validation', 'caltech-256-60-val.rec')
 print ("Finished Downloadng Testing Data")
 
+# * model params:
 print ("Setting Algorithm Settings")
 # The algorithm supports multiple network depth (number of layers). They are 18, 34, 50, 101, 152 and 200
 # For this training, we will use 18 layers
-num_layers = "18" 
+num_layers = "18"
 # we need to specify the input image shape for the training data
 image_shape = "3,224,224"
 # we also need to specify the number of training samples in the training set
@@ -58,8 +64,9 @@ epochs = "2"
 # learning rate
 learning_rate = "0.01"
 
+# * training params:
 s3 = boto3.client('s3')
-# create unique job name 
+# create unique job name
 job_name = stack_name + "-" + commit_id + "-" + timestamp
 training_params = \
 {
@@ -74,7 +81,7 @@ training_params = \
     },
     "ResourceConfig": {
         "InstanceCount": 1,
-        "InstanceType": "ml.m4.xlarge",
+        "InstanceType": "ml.p2.xlarge",
         "VolumeSizeInGB": 50
     },
     "TrainingJobName": job_name,
@@ -90,9 +97,9 @@ training_params = \
     "StoppingCondition": {
         "MaxRuntimeInSeconds": 360000
     },
-#Training data should be inside a subdirectory called "train"
-#Validation data should be inside a subdirectory called "validation"
-#The algorithm currently only supports fullyreplicated model (where data is copied onto each machine)
+	#Training data should be inside a subdirectory called "train"
+	#Validation data should be inside a subdirectory called "validation"
+	#The algorithm currently only supports fullyreplicated model (where data is copied onto each machine)
     "InputDataConfig": [
         {
             "ChannelName": "train",
@@ -123,7 +130,7 @@ training_params = \
 print('Training job name: {}'.format(job_name))
 print('\nInput Data Location: {}'.format(training_params['InputDataConfig'][0]['DataSource']['S3DataSource']))
 
-# create the Amazon SageMaker training job
+# * create the Amazon SageMaker training job:
 sagemaker = boto3.client(service_name='sagemaker')
 sagemaker.create_training_job(**training_params)
 
@@ -144,7 +151,7 @@ except:
     print('Training failed with the following error: {}'.format(message))
 
 
-# creating configuration files so we can pass parameters to our sagemaker endpoint cloudformation
+# * creating configuration files so we can pass parameters to our sagemaker endpoint cloudformation:
 
 config_data_qa = {
   "Parameters":
